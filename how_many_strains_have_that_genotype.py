@@ -13,7 +13,7 @@ def read_in_alignment(whole_genome_alignment, chinese_subclades):
 	sequences = SeqIO.parse(whole_genome_alignment, 'fasta')
 	for s in sequences:
 		if s.id in chinese_subclades:
-			seqs.append(s.sequence)
+			seqs.append(s.seq)
 	print len(seqs)
 	return seqs
 
@@ -21,12 +21,13 @@ def read_positions(seqs, postions):
 	for p in postions:
 		alleles = [s[p] for s in seqs]
 		alleles = dict(Counter(alleles))
+
 		print '\t'.join(map(str, [p, alleles['A'], alleles['C'], alleles['G'], alleles['T']]))
 
 
 
 def main(positions, whole_genome_alignment, chinese_subclades):
-	read_in_alignment(whole_genome_alignment, chinese_subclades)
+	seqs = read_in_alignment(whole_genome_alignment, chinese_subclades)
 	read_positions(seqs, positions)
 
 positions = [1474, 1341073, 2030758, 2030761, 2626348, 4060588, 3343411, 4154910, 2122395, 2867298, 2295943, 2631574, 2631565, 2631556, 2631495, 2631968, 2631967, 55553, 3248028, 964674, 473822, 475888, 475833, 608037, 832109, 842063, 842065, 842111, 842051, 842058, 842057, 1254144, 1441582, 1481185, 2123179, 2953581, 4078056, 332787, 841495]
