@@ -21,7 +21,14 @@ def read_positions(seqs, postions):
 	for p in postions:
 		alleles = [s[p] for s in seqs]
 		alleles = dict(Counter(alleles))
-
+		if 'A' not in alleles:
+			alleles['A'] = 0
+		if 'C' not in alleles:
+			alleles['C'] = 0
+		if 'T' not in alleles:
+			alleles['T'] = 0
+		if 'G' not in alleles:
+			alleles['G'] = 0
 		print '\t'.join(map(str, [p, alleles['A'], alleles['C'], alleles['G'], alleles['T']]))
 
 
