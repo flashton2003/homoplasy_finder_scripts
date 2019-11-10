@@ -17,6 +17,7 @@ class Homoplasy():
 def get_args():
     if len(sys.argv) != 4:
         print 'Useage: python convert_to_vcf.py <snp_sites_vcf> <homoplasy_finder_output> <reference_genome>'
+        sys.exit()
     else:
         return sys.argv[1], sys.argv[2], sys.argv[3]
 
@@ -57,12 +58,6 @@ def add_ref_allele(homoplasies, ref):
     for h in homoplasies:
         h.ref_allele = ref.seq[h.genomic_position - 1]
 
-def check_if_multiallelic(homoplasies):
-    for h in homoplasies:
-        if len([x for x in [h.counts_A, h.counts_C, h.counts_G, h.counts_T] if x > 0]) > 2:
-            # print h.counts_A, h.counts_C, h.counts_G, h.counts_T
-            h.multi_allelic = True
-
 def add_alt_alleles(homoplasies):
     for h in homoplasies:
         alts = []
@@ -79,13 +74,12 @@ def add_alt_alleles(homoplasies):
         h.alt_alleles = alts
         # print len(h.alt_alleles)
 
-def print_vcf(homoplasies):
-    vcf = "##fileformat=VCFv4.1\n##contig=<ID=Chromosome,length=4411532>\n##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t16494-ERR3256127\n"
+def print_vcf(homoplasies, chromsome_name):
+    vcf = "##fileformat=VCFv4.1\n##contig=<ID=%s,length=4411532>\n##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t16494-ERR3256127\n" % chromsome_name
     for h in homoplasies:
         for a in h.alt_alleles:
-            vcf += "Chromosome\t%s\t.\t%s\t%s\t.\t.\tHOMOPLASY_FINDER_INDEX=%s\tGT\t1\n" % (h.genomic_position, h.ref_allele, a, h.snp_sites_position)
+            vcf += "%s\t%s\t.\t%s\t%s\t.\t.\tHOMOPLASY_FINDER_INDEX=%s\tGT\t1\n" % (chromsome_name, h.genomic_position, h.ref_allele, a, h.snp_sites_position)
     print vcf.rstrip('\n')
-
 
 def main():
     ss_vcf_handle, homoplasy_output_handle, reference_genome_handle = get_args()
@@ -95,11 +89,9 @@ def main():
     add_genomic_position(homoplasies, variants)
     add_ref_allele(homoplasies, ref)
     # print homoplasies[0].genomic_position, homoplasies[0].ref_allele
-    check_if_multiallelic(homoplasies)
     add_alt_alleles(homoplasies)
     # print len(homoplasies)
-    print_vcf(homoplasies)
-
+    print_vcf(homoplasies, ref.id)
 
 '''
 0. get snp-sites vcf for the fasta which went into homoplasy finder
@@ -111,10 +103,7 @@ def main():
     d. vcf - chromo, pos, ref, alt, etc.
 '''
 
-root_dir = '/Users/flashton/Dropbox/mtb/all_tb_in_asia/homoplasy_finder/results/2019.11.05/post-filipino/'
-ss_vcf_handle = '%s/2019.11.04_all_L4_masked.snp-sites.vcf' % root_dir
-homoplasy_output_handle = '%s/consistencyIndexReport_05-11-19.txt' % root_dir
-reference_genome_handle = '/Users/flashton/Dropbox/mtb/reference_genomes/2019.11.05/Mycobacterium_tuberculosis_h37rv.ASM19595v2.dna.chromosome.Chromosome.fa'
+
 
 if __name__ == '__main__':
-    main(ss_vcf_handle, homoplasy_output_handle, reference_genome_handle)
+    main()
