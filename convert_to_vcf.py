@@ -30,7 +30,6 @@ def read_in_ss_vcf(ss_vcf_handle):
                 header.append(line)
             else:
                 variants.append(line.split()[1])
-    # print len(header)
     return variants
 
 def read_reference_genome(reference_genome_handle):
@@ -49,10 +48,8 @@ def read_homoplasy_output(homoplasy_output_handle):
 
 def add_genomic_position(homoplasies, variants):
     for h in homoplasies:
-        # print h
         ## add in the genomic position of the variant
         h.genomic_position = int(variants[int(h.snp_sites_position) - 1])
-        # print h
 
 def add_ref_allele(homoplasies, ref):
     for h in homoplasies:
@@ -72,7 +69,6 @@ def add_alt_alleles(homoplasies):
         if h.ref_allele in alts:
             alts.remove(h.ref_allele)
         h.alt_alleles = alts
-        # print len(h.alt_alleles)
 
 def print_vcf(homoplasies, chromsome_name):
     vcf = "##fileformat=VCFv4.1\n##contig=<ID=%s,length=4411532>\n##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t16494-ERR3256127\n" % chromsome_name
@@ -88,9 +84,7 @@ def main():
     homoplasies = read_homoplasy_output(homoplasy_output_handle)
     add_genomic_position(homoplasies, variants)
     add_ref_allele(homoplasies, ref)
-    # print homoplasies[0].genomic_position, homoplasies[0].ref_allele
     add_alt_alleles(homoplasies)
-    # print len(homoplasies)
     print_vcf(homoplasies, ref.id)
 
 '''
