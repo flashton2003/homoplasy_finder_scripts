@@ -1,3 +1,4 @@
+import sys
 from Bio import SeqIO
 
 class Homoplasy():
@@ -13,6 +14,11 @@ class Homoplasy():
         self.alt_alleles = list
         self.multi_allelic = False
 
+def get_args():
+    if len(sys.argv) != 4:
+        print 'Useage: python convert_to_vcf.py <snp_sites_vcf> <homoplasy_finder_output> <reference_genome>'
+    else:
+        return sys.argv[1], sys.argv[2], sys.argv[3]
 
 def read_in_ss_vcf(ss_vcf_handle):
     with open(ss_vcf_handle) as fi:
@@ -81,7 +87,8 @@ def print_vcf(homoplasies):
     print vcf.rstrip('\n')
 
 
-def main(ss_vcf_handle, homoplasy_output_handle, reference_genome_handle):
+def main():
+    ss_vcf_handle, homoplasy_output_handle, reference_genome_handle = get_args()
     variants = read_in_ss_vcf(ss_vcf_handle)
     ref = read_reference_genome(reference_genome_handle)
     homoplasies = read_homoplasy_output(homoplasy_output_handle)
